@@ -105,9 +105,9 @@
         })
     }
     function deleteBoard(boardId) {
-        const index = this.boards.findIndex(board => board.id === boardId)
+        const index = boards.findIndex(board => board.id === boardId)
         if (index !== -1) {
-            this.boards.splice(index, 1)
+            boards.splice(index, 1)
         }
     }
 
