@@ -1,15 +1,19 @@
 <script setup>
-    import { reactive } from 'vue'
-    import InputNew from './InputNew.vue';
-    import { watch } from 'vue';
+    import { reactive, ref } from 'vue'
+    import InputNew from './InputNew.vue'
+    import { watch } from 'vue'
 
-    const localStorageKey = 'boardsData';
-    const storedData = localStorage.getItem(localStorageKey);
+    const localStorageItem = 'ItemData'
+
+    const storedData = localStorage.getItem(localStorageItem)
+
+
 
     let boards
     if (storedData) {
         boards = reactive(JSON.parse(storedData));
-    } else {
+    }
+    else {
         // ... tableros predeterminados ...
         boards = reactive([
             {
@@ -33,11 +37,13 @@
                 items: [
                     {
                         id: crypto.randomUUID(),
-                        title: "Jugar dota"
+                        title: "Jugar dota",
+                        checked: false
                     },
                     {
                         id: crypto.randomUUID(),
-                        title: "Jugar wow"
+                        title: "Jugar wow",
+                        checked: false
                     },
 
                 ]
@@ -48,16 +54,18 @@
 
 
     watch(boards, (newBoards) => {
-        localStorage.setItem(localStorageKey, JSON.stringify(newBoards));
+        localStorage.setItem(localStorageItem, JSON.stringify(newBoards));
     })
 
     function handleNewItem(text, board) {
         board.items.push({
             id: crypto.randomUUID(),
-            title: text.value
+            title: text.value,
+            checked: false
         })
 
     }
+
 
     function handleNewBoard() {
         const name = prompt('Name of the board')
@@ -96,6 +104,13 @@
             }
         })
     }
+    function deleteBoard(boardId) {
+        const index = this.boards.findIndex(board => board.id === boardId);
+        if (index !== -1) {
+            this.boards.splice(index, 1);
+        }
+    }
+
 
 </script>
 
@@ -103,7 +118,7 @@
     <nav>
         <ul>
             <li>
-                <a href="#" @click="handleNewBoard">Create board</a>
+                <a href="#" @click="handleNewBoard">➕ Create board</a>
             </li>
         </ul>
     </nav>
@@ -112,12 +127,12 @@
         <div class="boards">
             <div class="board" @drop="onDrop($event, board)" @dragover.prevent @dragenter.prevent v-for="board in boards"
                 :key="board.id">
-                <div>{{ board.name }}</div>
+                <div>{{ board.name }} <button class="btn-board" @click="deleteBoard(board.id)">✖</button></div>
                 <InputNew @on-new-item="(text) => handleNewItem(text, board)" />
                 <div class="items">
                     <div class="item" draggable="true" @dragstart="starDrag($event, board, item)"
                         v-for="item in board.items" :key="item.id">
-                        <input type="checkbox" class="done">
+                        <input type="checkbox" :checked="item.checked" @change="item.checked = !item.checked">
                         {{ item.title }}
                         <button @click="deleteItem(item.id)">✖</button>
                     </div>
@@ -136,9 +151,14 @@
         padding: 0 5px;
     }
 
-    .done {
-        text-decoration: line-through;
+    .board .btn-board {
+        position: absolute;
+        translate: 1em;
+
+        background-color: #303030;
+        padding: 0 5px;
     }
+
 
     nav {
 
