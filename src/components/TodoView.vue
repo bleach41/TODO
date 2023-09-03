@@ -14,30 +14,30 @@
         boards = reactive([
             {
                 id: crypto.randomUUID(),
-                name: 'tablero 1',
+                name: 'Dia 1',
                 items: [
                     {
                         id: crypto.randomUUID(),
-                        title: "feature de archivos"
+                        title: "Sacar al perro"
                     },
                     {
                         id: crypto.randomUUID(),
-                        title: "resolve bug"
+                        title: "Ir al gym"
                     },
 
                 ]
             },
             {
                 id: crypto.randomUUID(),
-                name: 'tablero 2',
+                name: 'Dia 2',
                 items: [
                     {
                         id: crypto.randomUUID(),
-                        title: "mandar reporte"
+                        title: "Jugar dota"
                     },
                     {
                         id: crypto.randomUUID(),
-                        title: "code review"
+                        title: "Jugar wow"
                     },
 
                 ]
@@ -88,7 +88,14 @@
 
 
     }
-
+    const deleteItem = (id) => {
+        boards.forEach((board) => {
+            const index = board.items.findIndex(item => item.id === id)
+            if (index !== -1) {
+                board.items.splice(index, 1)
+            }
+        })
+    }
 
 </script>
 
@@ -109,8 +116,11 @@
                 <InputNew @on-new-item="(text) => handleNewItem(text, board)" />
                 <div class="items">
                     <div class="item" draggable="true" @dragstart="starDrag($event, board, item)"
-                        v-for="item in board.items" :key="item.id">{{
-                            item.title }}</div>
+                        v-for="item in board.items" :key="item.id">
+                        <input type="checkbox" class="done">
+                        {{ item.title }}
+                        <button @click="deleteItem(item.id)">✖</button>
+                    </div>
                 </div>
             </div>
         </div>
@@ -118,6 +128,18 @@
 </template>
 
 <style scoped>
+    .item button {
+        position: absolute;
+        translate: 8em;
+
+        background-color: #303030;
+        padding: 0 5px;
+    }
+
+    .done {
+        text-decoration: line-through;
+    }
+
     nav {
 
         display: flex;
@@ -158,6 +180,8 @@
     }
 
     .item {
+        display: flex;
+        align-content: space-around;
         background-color: white;
         padding: 10px;
         box-sizing: border-box;
